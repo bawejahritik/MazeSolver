@@ -1,7 +1,7 @@
 import time
 import random
 from cell import Cell
-
+from collections import deque
 class Maze():
     def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None):
         self._cells = []
@@ -20,6 +20,9 @@ class Maze():
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
         self._reset_cells_visited()
+        self.dfs_solve()
+        self._reset_cells_visited()
+        self.bfs_solve()
     
     def _create_cells(self):
         self._cells = [[Cell(self._win) for _ in range(self._num_rows)] for _ in range(self._num_cols)]
@@ -97,7 +100,35 @@ class Maze():
             for j in range(len(self._cells[0])):
                 self._cells[i][j]._visited = False
     
-    def solve(self):
+    def bfs_solve(self):
+        return self._bfs_solve_r(0, 0)
+
+    def _bfs_solve_r(self, i, j):
+        q = deque([(i, j)])
+        while q:
+            self._animate()
+            x, y = q.popleft()
+            curr_cell = self._cells[x][y]
+            curr_cell._visited = True
+            if x == self._num_cols-1 and y == self._num_rows-1:
+                return True
+            if x > 0 and not self._cells[x-1][y]._visited and not curr_cell.has_left_wall:
+                curr_cell.draw_move(self._cells[x-1][y], fill_color="green")
+                q.append((x-1, y))
+            if y > 0 and not self._cells[x][y-1]._visited and not curr_cell.has_top_wall:
+                curr_cell.draw_move(self._cells[x][y-1], fill_color="green")
+                q.append((x, y-1))
+            if x < self._num_cols-1 and not self._cells[x+1][y]._visited and not curr_cell.has_right_wall:
+                curr_cell.draw_move(self._cells[x+1][y], fill_color="green")
+                q.append((x+1, y))
+            if y < self._num_rows-1 and not self._cells[x][y+1]._visited and not curr_cell.has_bottom_wall:
+                curr_cell.draw_move(self._cells[x][y+1], fill_color="green")
+                q.append((x, y+1))            
+        return False
+ 
+    def dfs_solve(self):
+        res = self._solve_r(0, 0)
+        self._reset_cells_visited()
         return self._solve_r(0, 0)
     
     def _solve_r(self, i, j):

@@ -49,7 +49,7 @@ class Cell():
         else:
             self._win.draw_line(bottom_line, 'white')
         
-    def draw_move(self, to_cell, undo=False):
+    def draw_move(self, to_cell, undo=False, fill_color="red"):
         if self._win is None:
             return 
         x_mid = (self._x1 + self._x2)/2
@@ -58,7 +58,7 @@ class Cell():
         to_x_mid = (to_cell._x1 + to_cell._x2)/2
         to_y_mid = (to_cell._y1 + to_cell._y2)/2
 
-        fill_color = "red"
+        fill_color = fill_color
         
         if undo:
             fill_color = "gray"
